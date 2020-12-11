@@ -5,7 +5,7 @@ import { EventPayloads } from "@octokit/webhooks";
 async function run() {
     try {
         core.debug("Starting PR Title check for Jira Issue Key");
-        core.info(JSON.stringify(github.context));
+        core.debug(JSON.stringify(github.context));
         const title = getPullRequestTitle();
         const regex = getRegex();
 
@@ -36,9 +36,9 @@ export function getRegex() {
 }
 
 export function getPullRequestTitle() {
-    core.debug(`Context: ${github.context}`);
+    core.debug(`Context: ${JSON.stringify(github.context)}`);
     let pull_request = github.context.payload.pull_request;
-    core.debug(`Pull Request: ${github.context.payload.pull_request}`);
+    core.debug(`Pull Request: ${JSON.stringify(github.context.payload.pull_request)}`);
     if (!pull_request || !pull_request.body) {
         throw new Error("This action should only be run with Pull Request Events");
     }
