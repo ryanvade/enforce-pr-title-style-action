@@ -1,5 +1,5 @@
 {
-  "name": "check-pr-title-includes-jira-issue-key-action",
+  "name": "@ryanvade/enforce-pr-title-style-action",
   "version": "1.0.0",
   "description": "Checks that a Pull Request includes a Jira Issue key",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryanvade/check-pr-title-includes-jira-issue-key-action.git"
+    "url": "git+https://github.com/ryanvade/enforce-pr-title-style-action.git"
   },
   "keywords": [
     "actions",
@@ -23,9 +23,9 @@
   "author": "Ryan Owens <RyanOwens@linux.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ryanvade/check-pr-title-includes-jira-issue-key-action/issues"
+    "url": "https://github.com/ryanvade/enforce-pr-title-style-action/issues"
   },
-  "homepage": "https://github.com/ryanvade/check-pr-title-includes-jira-issue-key-action#readme",
+  "homepage": "https://github.com/ryanvade/enforce-pr-title-style-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
