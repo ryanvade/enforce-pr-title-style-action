@@ -5,6 +5,7 @@ import { EventPayloads } from "@octokit/webhooks";
 async function run() {
     try {
         core.debug("Starting PR Title check for Jira Issue Key");
+        console.log(JSON.stringify(github.context));
         core.debug(JSON.stringify(github.context));
         const title = getPullRequestTitle();
         const regex = getRegex();
