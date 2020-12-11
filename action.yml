@@ -1,4 +1,4 @@
-name: Pull Request Title Jira Check
+name: Enforce Pull Request Title includes Jira Issue Key
 description: Check that a PR title starts with a Jira Issue Key
 inputs:
   projectKey:

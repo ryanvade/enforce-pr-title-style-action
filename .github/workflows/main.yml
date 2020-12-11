@@ -1,0 +1,13 @@
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, unlocked]
+
+jobs:
+  hello_world:
+    runs-on: ubuntu-latest
+    name: Test Job
+    steps:
+      - uses: actions/checkout@v2
+      - name: Hello World
+        id: hello
+        uses: ./
