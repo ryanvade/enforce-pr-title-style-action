@@ -1,0 +1,9 @@
+name: Pull Request Title Jira Check
+description: Check that a PR title starts with a Jira Issue Key
+inputs:
+  projectKey:
+    description: 'A specific Jira Project Key that must be included.'
+    required: false
+runs:
+  using: node12
+  main: dist/index.js
