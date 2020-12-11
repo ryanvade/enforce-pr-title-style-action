@@ -10,6 +10,9 @@ async function run() {
         const title = getPullRequestTitle();
         const regex = getRegex();
 
+        core.debug(title);
+        core.debug(regex.toString());
+
         if (!regex.test(title)) {
             core.debug(`Regex ${regex} failed with title ${title}`);
             core.info("Title Failed");
@@ -40,12 +43,10 @@ export function getPullRequestTitle() {
     core.debug(`Context: ${JSON.stringify(github.context)}`);
     let pull_request = github.context.payload.pull_request;
     core.debug(`Pull Request: ${JSON.stringify(github.context.payload.pull_request)}`);
-    if (!pull_request || !pull_request.body) {
+    if (!pull_request || !pull_request.title) {
         throw new Error("This action should only be run with Pull Request Events");
     }
-    core.debug(`Pull Request Body: ${pull_request.body}`);
-    let body: EventPayloads.WebhookPayloadPullRequestPullRequest = JSON.parse(pull_request.body);
-    return body.title;
+    return pull_request.title;
 }
 
 run()

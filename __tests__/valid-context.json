@@ -1,5 +1,5 @@
 {
     "pull_request": {
-        "body": "{ \"title\": \"Test Title\"}"
+        "title": "Test Title"
     }
 }
