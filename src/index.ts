@@ -43,7 +43,7 @@ export function getPullRequestTitle() {
     core.debug(`Context: ${JSON.stringify(github.context)}`);
     let pull_request = github.context.payload.pull_request;
     core.debug(`Pull Request: ${JSON.stringify(github.context.payload.pull_request)}`);
-    if (!pull_request || !pull_request.title) {
+    if (pull_request == undefined || pull_request.title == undefined) {
         throw new Error("This action should only be run with Pull Request Events");
     }
     return pull_request.title;
