@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Job
     steps:
-      - name: Dump GitHub context
-          env:
-            GITHUB_CONTEXT: ${{ toJson(github) }}
-          run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v2
       - name: Hello World
         id: hello
