@@ -31,7 +31,7 @@ describe("index", () => {
         it("gets the default when no project key is provided", () => {
             process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] = "";
             const regex = getRegex();
-            let defaultRegex = /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+            let defaultRegex = /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(.)+/;
             expect(regex).toEqual(defaultRegex);
             expect(regex.test("PR-4 this is valid")).toBe(true);
         });
@@ -46,6 +46,22 @@ describe("index", () => {
         it("throws an exception if the provided project key is not valid", () => {
             process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] = "aB";
             expect(getRegex).toThrowError("Project Key  \"aB\" is invalid");
+        });
+    });
+
+    describe("testRegex", () => {
+        const name = "projectKey";
+        it("No whitespace between JIRA issue key and description is valid", () => {
+            process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] = "";
+            const regex = getRegex();
+            expect(regex.test("PR-4:this is valid")).toBe(true);
+            expect(regex.test("PR-4_this is valid")).toBe(true);
+            expect(regex.test("PR-4/this is valid")).toBe(true);
+            expect(regex.test("PR-4-this is valid")).toBe(true);
+            expect(regex.test("PR-4: this is valid")).toBe(true);
+            expect(regex.test("PR-4_ this is valid")).toBe(true);
+            expect(regex.test("PR-4/ this is valid")).toBe(true);
+            expect(regex.test("PR-4- this is valid")).toBe(true);
         });
     });
 });
