@@ -25,7 +25,7 @@ async function run() {
 }
 
 export function getRegex() {
-    let regex = /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+    let regex = /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(.)+/;
     const projectKey = core.getInput("projectKey", { required: false });
     if (projectKey && projectKey !== "") {
         core.debug(`Project Key ${projectKey}`);
