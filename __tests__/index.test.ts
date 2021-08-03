@@ -57,7 +57,7 @@ describe("index", () => {
     it("No whitespace between JIRA issue key and description is valid", () => {
       process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] = "";
       const regex = getRegex();
-      expect(regex.test("PR-4:this is valid")).toBe(true);
+      expect(regex.test("GTDP-188 cipo pipeline")).toBe(true);
       expect(regex.test("PR-4_this is valid")).toBe(true);
       expect(regex.test("PR-4/this is valid")).toBe(true);
       expect(regex.test("PR-4-this is valid")).toBe(true);
