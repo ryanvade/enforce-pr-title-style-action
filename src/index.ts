@@ -19,7 +19,7 @@ async function run() {
         }
         core.info("Title Passed");
 
-    } catch (error) {
+    } catch (error: any) {
         core.setFailed(error.message);
     }
 }
