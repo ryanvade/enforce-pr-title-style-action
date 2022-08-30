@@ -1,8 +1,11 @@
-name: Enforce Pull Request Title includes Jira Issue Key
-description: Check that a PR title starts with a Jira Issue Key
+name: Enforce Pull Request Title includes Jira Issue Key and Custom Message Separator
+description: Check that a PR title starts with a Jira Issue Key and Custom Message Separator
 inputs:
   projectKey:
     description: 'A specific Jira Project Key that must be included.'
+    required: false
+  commitMessageSeparator:
+    description: 'A specific commit message separator must be included.'
     required: false
 runs:
   using: node12

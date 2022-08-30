@@ -25,16 +25,25 @@ async function run() {
 }
 
 export function getRegex() {
-    let regex = /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+    const commitMessageSeparatorByInput = core.getInput("commitMessageSeparator", { required: false });
+    const commitMessageSeparator = isValidInput(commitMessageSeparatorByInput) ? commitMessageSeparatorByInput : '\s'
+    let regex = new RegExp(`/(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(${commitMessageSeparator})+(.)+/`);
     const projectKey = core.getInput("projectKey", { required: false });
-    if (projectKey && projectKey !== "") {
+    if (isValidInput(projectKey)) {
         core.debug(`Project Key ${projectKey}`);
         if (!/(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*)/.test(projectKey)) {
             throw new Error(`Project Key  "${projectKey}" is invalid`)
         }
-        regex = new RegExp(`(^${projectKey}-){1}(\\d)+(\\s)+(.)+`);
+        regex = new RegExp(`(^${projectKey}-){1}(\\d)+(${commitMessageSeparator})+(.)+`);
     }
     return regex;
+}
+
+export function isValidInput(input: string) {
+    if (input && input !== "") {
+        return true
+    }
+    return false
 }
 
 export function getPullRequestTitle() {

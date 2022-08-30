@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/ryanvade/enforce-pr-title-style-action#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.9.1",
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.24.3",
     "@types/jest": "^26.0.24",
