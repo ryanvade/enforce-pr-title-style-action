@@ -32,7 +32,8 @@ export function getRegex() {
         if (!/(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*)/.test(projectKey)) {
             throw new Error(`Project Key  "${projectKey}" is invalid`)
         }
-        regex = new RegExp(`(^${projectKey}-){1}(\\d)+(\\s)+(.)+`);
+        regex = new RegExp(`(^${projectKey}-){1}(\\d+):?(\\s+)(.+)`);
+        
     }
     return regex;
 }
