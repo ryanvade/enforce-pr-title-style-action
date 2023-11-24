@@ -27,21 +27,24 @@
   },
   "homepage": "https://github.com/ryanvade/enforce-pr-title-style-action#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
-    "@actions/github": "^4.0.0",
-    "@octokit/webhooks": "^7.24.3",
-    "@types/jest": "^26.0.24",
-    "@types/node": "^14.18.12",
-    "@typescript-eslint/parser": "^4.33.0",
-    "@vercel/ncc": "^0.25.1",
-    "eslint": "^7.32.0",
-    "eslint-plugin-github": "^4.3.5",
-    "eslint-plugin-jest": "^24.7.0",
-    "jest": "^26.6.3",
-    "jest-circus": "^26.6.3",
-    "js-yaml": "^3.14.1",
-    "prettier": "^2.5.1",
-    "ts-jest": "^26.5.6",
-    "typescript": "^4.6.2"
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "@octokit/webhooks": "^12.0.7",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.1",
+    "@vercel/ncc": "^0.38.1",
+    "eslint-plugin-github": "^4.10.1",
+    "eslint-plugin-jest": "^27.6.0",
+    "jest": "^29.7.0",
+    "jest-circus": "^29.7.0",
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.1.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0"
   }
 }

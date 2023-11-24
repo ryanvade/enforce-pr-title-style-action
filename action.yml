@@ -4,6 +4,13 @@ inputs:
   projectKey:
     description: 'A specific Jira Project Key that must be included.'
     required: false
+  separator:
+    description: 'Character that should be used to separate the Jira Project Key and Issue Number from the rest of the title'
+    required: false
+  keyAnywhereInTitle:
+    description: 'Allows the Jira Project Key and Issue Number to be anywhere in the title'
+    required: false
+    default: 'false'
 runs:
-  using: node12
+  using: node20
   main: dist/index.js
