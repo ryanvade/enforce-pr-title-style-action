@@ -121,10 +121,10 @@ var getPullRequestTitle = function () {
 };
 exports.getPullRequestTitle = getPullRequestTitle;
 var getDefaultJiraIssueRegex = function () {
-    return new RegExp("(?<=^|[a-z]\\-|[\\s\\p{Punct}&&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+");
+    return new RegExp("(?<=^|[a-z]\\-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+");
 };
 var isValidProjectKey = function (projectKey) {
-    return /(?<=^|[a-z]-|[\s\p{Punct}&&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
+    return /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
 };
 var getRegexWithProjectKeyAndKeyAnywhereInTitle = function (projectKey, keyAnywhereInTitle) {
     return "".concat(keyAnywhereInTitle ? "(.)*" : "", "(").concat(keyAnywhereInTitle ? "" : "^").concat(projectKey, "-){1}");

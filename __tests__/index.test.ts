@@ -2,10 +2,25 @@ import * as github from "@actions/github";
 import { readFileSync } from "fs";
 import { getPullRequestTitle, getRegex } from "../src";
 
+const projectKeyInputName = "projectKey";
+const separatorKeyInputName = "separator";
+const keyAnywhereInTitle = "keyAnywhereInTitle";
+
+const resetEnvironmentVariables = () => {
+  process.env[`INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`] =
+    "";
+  process.env[
+    `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
+  ] = "";
+  process.env[`INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`] =
+    "false";
+};
+
 describe("index", () => {
   describe("getPullRequestTitle", () => {
     beforeEach(() => {
       delete process.env["GITHUB_EVENT_PATH"];
+      resetEnvironmentVariables();
     });
     it("can get the title from the context", () => {
       process.env["GITHUB_EVENT_PATH"] = __dirname + "/valid-context.json";
@@ -29,22 +44,14 @@ describe("index", () => {
   });
 
   describe("getRegex", () => {
-    const projectKeyInputName = "projectKey";
-    const separatorKeyInputName = "separator";
-    const keyAnywhereInTitle = "keyAnywhereInTitle";
+    beforeEach(() => resetEnvironmentVariables());
     it("gets the default when no project key is provided", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "";
-      process.env[
-        `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
-      ] = "";
-      process.env[
-        `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
-      ] = "false";
       const regex = getRegex();
       let defaultRegex =
-        /(?<=^|[a-z]\-|[\s\p{Punct}&&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+        /(?<=^|[a-z]\-|[\s\p{Punct}&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
       expect(regex).toEqual(defaultRegex);
       expect(regex.test("PR-4 this is valid")).toBe(true);
     });
@@ -53,12 +60,6 @@ describe("index", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "AB";
-      process.env[
-        `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
-      ] = "";
-      process.env[
-        `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
-      ] = "false";
       const regex = getRegex();
       expect(regex).toEqual(new RegExp(`(^AB-){1}(\\d)+(\\s)+(.)+`));
       expect(regex.test("AB-43 stuff and things")).toBe(true);
@@ -68,12 +69,6 @@ describe("index", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "aB";
-      process.env[
-        `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
-      ] = "";
-      process.env[
-        `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
-      ] = "false";
       expect(getRegex).toThrow('Project Key  "aB" is invalid');
     });
 
@@ -115,9 +110,6 @@ describe("index", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "AB";
-      process.env[
-        `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
-      ] = "";
       process.env[
         `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
       ] = "true";
