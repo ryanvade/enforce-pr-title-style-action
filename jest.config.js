@@ -1,3 +1,4 @@
+// noinspection Eslint
 module.exports = {
     clearMocks: true,
     moduleFileExtensions: ['js', 'ts'],
