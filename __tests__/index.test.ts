@@ -53,7 +53,8 @@ describe("index", () => {
       ] = "";
       const regex = getRegex();
       const defaultRegex =
-        /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+          // eslint-disable-next-line no-useless-escape
+        /(?<=^|[a-z]-|[\s\p{Punct}&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
       expect(regex).toEqual(defaultRegex);
       expect(regex.test("PR-4 this is valid")).toBe(true);
     });

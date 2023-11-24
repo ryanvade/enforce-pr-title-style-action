@@ -121,7 +121,7 @@ var getPullRequestTitle = function () {
 };
 exports.getPullRequestTitle = getPullRequestTitle;
 var getDefaultJiraIssueRegex = function () {
-    return new RegExp("(?<=^|[a-z]\\-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+");
+    return new RegExp("(?<=^|[a-z]-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+");
 };
 var isValidProjectKey = function (projectKey) {
     return /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
