@@ -55,11 +55,11 @@ By default, this action will allow any valid Issue Key so long as it *could* be 
 
 ### `projectKey`
 
-A specific Project Key to always check for. Defaults to a space character.
+A specific Project Key to always check for
 
 ### `separator`
 
-A specific separator to use 
+A specific separator to use. Defaults to a space character.
 
 ### `keyAnywhereInTitle`
 
