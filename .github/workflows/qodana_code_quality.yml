@@ -11,8 +11,13 @@ jobs:
     # noinspection SpellCheckingInspection
     if: github.repository_owner == 'ryanvade'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+      security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Use Node.js 20.x
@@ -25,8 +30,23 @@ jobs:
           key: ${{ runner.os }}-node-qodana-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - run: npm ci
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Archive coverage data
+        uses: actions/upload-artifact@v3
+        with:
+          name: jest-coverage-data
+          path: .qodana/code-coverage
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2.8
+        with:
+          args: --apply-fixes
+          push-fixes: pull-request
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json

@@ -9,7 +9,7 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "package": "tsc && ncc build --source-map --license licenses.txt",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
