@@ -1,6 +1,6 @@
 import * as github from "@actions/github";
 import { readFileSync } from "fs";
-import { getPullRequestTitle, getRegex } from "../src";
+import { getPullRequestTitle, getRegex } from "../src/main";
 
 const projectKeyInputName = "projectKey";
 const separatorKeyInputName = "separator";
@@ -53,7 +53,7 @@ describe("index", () => {
       ] = "";
       const regex = getRegex();
       const defaultRegex =
-          // eslint-disable-next-line no-useless-escape
+        // eslint-disable-next-line no-useless-escape
         /(?<=^|[a-z]-|[\s\p{Punct}&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
       expect(regex).toEqual(defaultRegex);
       expect(regex.test("PR-4 this is valid")).toBe(true);

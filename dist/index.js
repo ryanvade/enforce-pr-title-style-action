@@ -1,7 +1,7 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 9283:
+/***/ 9496:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -66,7 +66,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getPullRequestTitle = exports.getRegex = void 0;
+exports.getPullRequestTitle = exports.getRegex = exports.run = void 0;
 var core = __importStar(__nccwpck_require__(2186));
 var github = __importStar(__nccwpck_require__(5438));
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -93,6 +93,7 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
         return [2 /*return*/];
     });
 }); };
+exports.run = run;
 var getRegex = function () {
     var projectKey = core.getInput("projectKey", { required: false });
     var separator = core.getInput("separator", { required: false });
@@ -135,7 +136,6 @@ var getRegexWithProjectKey = function (projectKey, keyAnywhereInTitle) {
 var getRegexWithProjectKeyAndSeparator = function (projectKey, separator, keyAnywhereInTitle) {
     return new RegExp("".concat(getRegexWithProjectKeyAndKeyAnywhereInTitle(projectKey, keyAnywhereInTitle), "(\\d)+(").concat(separator, ")+(\\S)+(.)+"));
 };
-run();
 
 
 /***/ }),
@@ -30491,13 +30491,21 @@ module.exports = parseParams
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(9283);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var main_1 = __nccwpck_require__(9496);
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+// noinspection JSIgnoredPromiseFromCall
+(0, main_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
