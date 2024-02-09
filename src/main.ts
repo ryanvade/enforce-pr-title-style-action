@@ -23,25 +23,30 @@ export const run = async () => {
   }
 };
 export const getRegex = () => {
+  let projectKeys = core.getInput("projectKeys", { required: false });
+  if (!Array.isArray(projectKeys)) projectKeys = [];
   const projectKey = core.getInput("projectKey", { required: false });
+  if (!projectKey || projectKey === "") projectKeys.push(projectKey);
+  
   const separator = core.getInput("separator", { required: false });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
   });
 
-  core.debug(`Project Key ${projectKey}`);
+  core.debug(`Project Keys ${projectKeys}`);
   core.debug(`Separator ${separator}`);
   core.debug(`Key Anywhere In Title ${keyAnywhereInTitle}`);
 
-  if (!projectKey || projectKey === "") return getDefaultJiraIssueRegex();
+  if (projectKeys.length == 0) return getDefaultJiraIssueRegex();
 
-  if (!isValidProjectKey(projectKey))
-    throw new Error(`Project Key  "${projectKey}" is invalid`);
+  projectKeys.array.forEach(key => {
+    if (!isValidProjectKey(key)) throw new Error(`Project Key "${key}" is invalid`);
+  });
 
   if (!separator || separator === "")
-    return getRegexWithProjectKey(projectKey, keyAnywhereInTitle);
+    return getRegexWithProjectKeys(projectKey, keyAnywhereInTitle);
 
-  return getRegexWithProjectKeyAndSeparator(
+  return getRegexWithProjectKeysAndSeparator(
     projectKey,
     separator,
     keyAnywhereInTitle,
@@ -63,30 +68,32 @@ const getDefaultJiraIssueRegex = () =>
   );
 const isValidProjectKey = (projectKey: string) =>
   /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
-const getRegexWithProjectKeyAndKeyAnywhereInTitle = (
-  projectKey: string,
+const getRegexWithProjectKeysAndKeyAnywhereInTitle = (
+  projectKeys: string[],
   keyAnywhereInTitle: boolean,
-) =>
-  `${keyAnywhereInTitle ? "(.)*" : ""}(${
+) => {
+  const projectKeysPattern = projectKeys.join('|'); 
+  return `${keyAnywhereInTitle ? "(.)*" : ""}(${
     keyAnywhereInTitle ? "" : "^"
-  }${projectKey}-){1}`;
-const getRegexWithProjectKey = (
+  }${projectKeysPattern}-){1}`;
+};
+const getRegexWithProjectKeys = (
   projectKey: string,
   keyAnywhereInTitle: boolean,
 ) =>
   new RegExp(
-    `${getRegexWithProjectKeyAndKeyAnywhereInTitle(
+    `${getRegexWithProjectKeysAndKeyAnywhereInTitle(
       projectKey,
       keyAnywhereInTitle,
     )}(\\d)+(\\s)+(.)+`,
   );
-const getRegexWithProjectKeyAndSeparator = (
+const getRegexWithProjectKeysAndSeparator = (
   projectKey: string,
   separator: string,
   keyAnywhereInTitle: boolean,
 ) =>
   new RegExp(
-    `${getRegexWithProjectKeyAndKeyAnywhereInTitle(
+    `${getRegexWithProjectKeysAndKeyAnywhereInTitle(
       projectKey,
       keyAnywhereInTitle,
     )}(\\d)+(${separator})+(\\S)+(.)+`,
