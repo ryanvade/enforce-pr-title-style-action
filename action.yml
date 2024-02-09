@@ -4,6 +4,9 @@ inputs:
   projectKey:
     description: 'A specific Jira Project Key that must be included.'
     required: false
+  projectKeys:
+    description: 'A list Jira Project Keys of which at least one must be included.'
+    required: false
   separator:
     description: 'Character that should be used to separate the Jira Project Key and Issue Number from the rest of the title'
     required: false
