@@ -2,7 +2,7 @@ import * as github from "@actions/github";
 import { readFileSync } from "fs";
 import { getPullRequestTitle, getRegex } from "../src/main";
 
-const projectKeyInputName = "projectKey";
+const projectKeyInputName = "projectKeys";
 const separatorKeyInputName = "separator";
 const keyAnywhereInTitle = "keyAnywhereInTitle";
 
@@ -51,27 +51,36 @@ describe("index", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "";
-      const regex = getRegex();
+      const regexes = getRegex();
       const defaultRegex =
         // eslint-disable-next-line no-useless-escape
         /(?<=^|[a-z]-|[\s\p{Punct}&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
-      expect(regex).toEqual(defaultRegex);
-      expect(regex.test("PR-4 this is valid")).toBe(true);
+      expect(regexes.length).toEqual(1);
+      expect(regexes[0]).toEqual(defaultRegex);
+      expect(regexes[0].test("PR-4 this is valid")).toBe(true);
     });
 
     it("uses a project key if it exists", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "AB";
-      const regex = getRegex();
-      expect(regex).toEqual(new RegExp(`(^AB-){1}(\\d)+(\\s)+(.)+`));
-      expect(regex.test("AB-43 stuff and things")).toBe(true);
+      const regexes = getRegex();
+      expect(regexes.length).toEqual(1);
+      expect(regexes[0]).toEqual(new RegExp(`(^AB-){1}(\\d)+(\\s)+(.)+`));
+      expect(regexes[0].test("AB-43 stuff and things")).toBe(true);
     });
 
     it("throws an exception if the provided project key is not valid", () => {
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
       ] = "aB";
+      expect(getRegex).toThrow('Project Key  "aB" is invalid');
+    });
+
+    it("throws an exception if one of the provided project key is not valid", () => {
+      process.env[
+        `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
+      ] = "AB/naB/nCD";
       expect(getRegex).toThrow('Project Key  "aB" is invalid');
     });
 
@@ -85,7 +94,9 @@ describe("index", () => {
       process.env[
         `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
       ] = "false";
-      const regex = getRegex();
+      const regexes = getRegex();
+      expect(regexes.length).toEqual(1);
+      const regex = regexes[0];
       expect(regex).toEqual(new RegExp(`(^AB-){1}(\\d)+(:)+(\\S)+(.)+`));
       expect(regex.test("AB-43: stuff and things")).toBe(false);
       expect(regex.test("AB-123: PR Title")).toBe(false);
@@ -103,22 +114,28 @@ describe("index", () => {
       process.env[
         `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
       ] = "false";
-      const regex = getRegex();
+      const regexes = getRegex();
+      expect(regexes.length).toEqual(1);
+      const regex = regexes[0];
       expect(regex).toEqual(new RegExp(`(^AB-){1}(\\d)+(_)+(\\S)+(.)+`));
       expect(regex.test("AB-43_stuff and things")).toBe(true);
       expect(regex.test("AB-123_PR Title")).toBe(true);
     });
 
     it("uses a project key if it exists anywhere in the title", () => {
+      const projectNames: string[] = ["AB", "CD", "EF"];
       process.env[
         `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
-      ] = "AB";
+      ] = "AB/nCD/nEF";
       process.env[
         `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
       ] = "true";
-      const regex = getRegex();
-      expect(regex).toEqual(new RegExp(`(.)*(AB-){1}(\\d)+(\\s)+(.)+`));
-      expect(regex.test("other words AB-43 stuff and things")).toBe(true);
+      const regexes = getRegex();
+      expect(regexes.length).not.toEqual(1);
+      regexes.forEach((regex: RegExp, index: number) => {
+        expect(regex).toEqual(new RegExp(`(.)*(${projectNames[index]}-){1}(\\d)+(\\s)+(.)+`));
+        expect(regex.test(`other words ${projectNames[index]}-43 stuff and things`)).toBe(true);
+      })
     });
 
     it("uses a project key and a colon separator if they exist anywhere in the title", () => {
@@ -131,7 +148,9 @@ describe("index", () => {
       process.env[
         `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
       ] = "true";
-      const regex = getRegex();
+      const regexes = getRegex();
+      expect(regexes.length).toEqual(1);
+      const regex = regexes[0];
       expect(regex).toEqual(new RegExp(`(.)*(AB-){1}(\\d)+(:)+(\\S)+(.)+`));
       expect(regex.test("other words AB-43: stuff and things")).toBe(false);
       expect(regex.test("other words AB-123: PR Title")).toBe(false);
@@ -139,6 +158,27 @@ describe("index", () => {
       expect(regex.test("other words AB-123:PR Title")).toBe(true);
       expect(regex.test("AB-43:stuff and things")).toBe(true);
       expect(regex.test("AB-123:PR Title")).toBe(true);
+    });
+
+    it("uses a project key and a colon separator if they exist", () => {
+      const projectNames: string[] = ["AB", "CD", "EF", "GH"];
+      process.env[
+        `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
+      ] = "AB/nCD/nEF/nGH";
+      process.env[
+        `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
+      ] = ":";
+      process.env[
+        `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
+      ] = "false";
+      const regexCollection = getRegex();
+      regexCollection.forEach((regex: RegExp, index: number) => {
+        expect(regex).toEqual(new RegExp(`(^${projectNames[index]}-){1}(\\d)+(:)+(\\S)+(.)+`));
+        expect(regex.test(`${projectNames[index]}-43: stuff and things`)).toBe(false);
+        expect(regex.test(`${projectNames[index]}-123: PR Title`)).toBe(false);
+        expect(regex.test(`${projectNames[index]}-43:stuff and things`)).toBe(true);
+        expect(regex.test(`${projectNames[index]}-123:PR Title`)).toBe(true);
+      })
     });
   });
 });

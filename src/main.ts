@@ -5,47 +5,66 @@ export const run = async () => {
   try {
     core.debug("Starting PR Title check for Jira Issue Key");
     const title = getPullRequestTitle();
-    const regex = getRegex();
+    const allPossibleRegex = getRegex();
 
     core.debug(title);
-    core.debug(regex.toString());
+    core.debug(allPossibleRegex.toString());
 
-    if (!regex.test(title)) {
-      core.debug(`Regex ${regex} failed with title ${title}`);
-      core.info("Title Failed");
-      core.setFailed("PullRequest title does not start with a Jira Issue key.");
-      return;
+    for (const regex of allPossibleRegex) {
+      if (regex.test(title)) {
+        core.info("Title Passed");
+        return;
+      }
     }
-    core.info("Title Passed");
+    core.debug(`Regex ${allPossibleRegex} failed with title ${title}`);
+    core.info("Title Failed");
+    core.setFailed("PullRequest title does not start with any Jira Issue key.");
+    return;
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {
     core.setFailed(error.message);
   }
 };
-export const getRegex = () => {
-  const projectKey = core.getInput("projectKey", { required: false });
+export const getRegex = (): RegExp[] => {
+  const projectKeysInput = core.getInput("projectKeys", { required: false });
   const separator = core.getInput("separator", { required: false });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
   });
 
-  core.debug(`Project Key ${projectKey}`);
+  core.debug(`Project Keys ${projectKeysInput}`);
   core.debug(`Separator ${separator}`);
   core.debug(`Key Anywhere In Title ${keyAnywhereInTitle}`);
 
-  if (!projectKey || projectKey === "") return getDefaultJiraIssueRegex();
+  if (!projectKeysInput || projectKeysInput === "") return [getDefaultJiraIssueRegex()];
 
-  if (!isValidProjectKey(projectKey))
-    throw new Error(`Project Key  "${projectKey}" is invalid`);
+  const projectKeys: string[] = [];
+  // input separated by multiple lines: split and consume.
+  projectKeysInput.split('/n').forEach((project: string) => {
+    projectKeys.push(project.trim());
+  });
+  projectKeys.forEach((projectName: string) => {
+    if (!isValidProjectKey(projectName))
+      throw new Error(`Project Key  "${projectName}" is invalid`);
+  });
 
-  if (!separator || separator === "")
-    return getRegexWithProjectKey(projectKey, keyAnywhereInTitle);
+  const allPossibleRegex: RegExp[] = [];
 
-  return getRegexWithProjectKeyAndSeparator(
-    projectKey,
-    separator,
-    keyAnywhereInTitle,
-  );
+  if (!separator || separator === "") {
+    projectKeys.forEach((projectName: string) => {
+      allPossibleRegex.push(getRegexWithProjectKey(projectName, keyAnywhereInTitle));
+    });
+    return allPossibleRegex;
+  }
+
+  projectKeys.forEach((projectName: string) => {
+    allPossibleRegex.push(getRegexWithProjectKeyAndSeparator(
+      projectName,
+      separator,
+      keyAnywhereInTitle,
+    ));
+  });
+  return allPossibleRegex;
 };
 export const getPullRequestTitle = () => {
   const pull_request = github.context.payload.pull_request;
