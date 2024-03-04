@@ -26,23 +26,33 @@ export const run = async () => {
   }
 };
 export const getRegex = (): RegExp[] => {
-  const projectKeysInput = core.getInput("projectKeys", { required: false });
+  const projectKeyInput = core.getInput("projectKey", { required: false });
+  let projectKeysInput = core.getInput("projectKeys", { required: false });
   const separator = core.getInput("separator", { required: false });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
   });
 
+  core.debug(`Project Key ${projectKeyInput}`);
   core.debug(`Project Keys ${projectKeysInput}`);
   core.debug(`Separator ${separator}`);
   core.debug(`Key Anywhere In Title ${keyAnywhereInTitle}`);
 
-  if (!projectKeysInput || projectKeysInput === "") return [getDefaultJiraIssueRegex()];
+  if ((!projectKeysInput || projectKeysInput === "") && (!projectKeyInput || projectKeyInput === "")) return [getDefaultJiraIssueRegex()];
 
   const projectKeys: string[] = [];
+  // if there is any input in projectKeys.
   // input separated by multiple lines: split and consume.
-  projectKeysInput.split('/n').forEach((project: string) => {
-    projectKeys.push(project.trim());
-  });
+  projectKeysInput = projectKeysInput.trim(); // remove extra spaces.
+  if (projectKeysInput.length > 0) {
+    projectKeysInput.split('\n').forEach((project: string) => {
+      projectKeys.push(project.trim());
+    });
+  }
+  if (projectKeyInput) {
+    projectKeys.push(projectKeyInput);
+  }
+
   projectKeys.forEach((projectName: string) => {
     if (!isValidProjectKey(projectName))
       throw new Error(`Project Key  "${projectName}" is invalid`);

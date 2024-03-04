@@ -57,6 +57,10 @@ By default, this action will allow any valid Issue Key so long as it *could* be 
 
 A specific Project Key to always check for
 
+### `projectKeys`
+
+Multiple Project Keys to always check for
+
 ### `separator`
 
 A specific separator to use. Defaults to a space character.
@@ -64,6 +68,9 @@ A specific separator to use. Defaults to a space character.
 ### `keyAnywhereInTitle`
 
 Allows the Jira Project Key, Issue # and separator to be anywhere in the title. Defaults to false.
+
+
+Note that `projectKey` and `projectKeys` works same under the hood. You can pass either one of them depending on the usecase.
 
 ## Example Usage
 
@@ -79,6 +86,18 @@ Allows the Jira Project Key, Issue # and separator to be anywhere in the title. 
   uses: ryanvade/enforce-pr-title-style-action@v2
   with:
     projectKey: 'AB'
+```
+
+## Example Usage with a multiple Project Keys
+
+```
+- name: Enforce Jira Issue Key in Pull Request Title
+  uses: ryanvade/enforce-pr-title-style-action@v2
+  with:
+    projectKeys: |
+      'AB'
+      'CD'
+      'EF'
 ```
 
 ## Example Usage with a specific Project Key and a separator
