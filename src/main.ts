@@ -53,7 +53,6 @@ export const getRegex = (): RegExp[] => {
   projectKeys.forEach((projectKey: string) => {
     if (!isValidProjectKey(projectKey)) {
       const message = `ProjectKey ${projectKey} is not valid`;
-      core.setFailed(message);
       throw new Error(message);
     }
   });
@@ -88,7 +87,6 @@ export const getPullRequestTitle = () => {
   );
   if (pull_request == undefined || pull_request.title == undefined) {
     const message = "This action should only be run with Pull Request Events";
-    core.setFailed(message);
     throw new Error(message);
   }
   return pull_request.title;

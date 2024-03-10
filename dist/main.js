@@ -113,7 +113,6 @@ var getRegex = function () {
     projectKeys.forEach(function (projectKey) {
         if (!isValidProjectKey(projectKey)) {
             var message = "ProjectKey ".concat(projectKey, " is not valid");
-            core.setFailed(message);
             throw new Error(message);
         }
     });
@@ -135,7 +134,6 @@ var getPullRequestTitle = function () {
     core.debug("Pull Request: ".concat(JSON.stringify(github.context.payload.pull_request)));
     if (pull_request == undefined || pull_request.title == undefined) {
         var message = "This action should only be run with Pull Request Events";
-        core.setFailed(message);
         throw new Error(message);
     }
     return pull_request.title;
