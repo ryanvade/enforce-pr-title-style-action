@@ -63,21 +63,25 @@ exports.getPullRequestTitle = exports.getRegex = exports.run = void 0;
 var core = __importStar(require("@actions/core"));
 var github = __importStar(require("@actions/github"));
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var title, regex;
+    var title, allPossibleRegex, _i, allPossibleRegex_1, regex;
     return __generator(this, function (_a) {
         try {
             core.debug("Starting PR Title check for Jira Issue Key");
             title = (0, exports.getPullRequestTitle)();
-            regex = (0, exports.getRegex)();
+            allPossibleRegex = (0, exports.getRegex)();
             core.debug(title);
-            core.debug(regex.toString());
-            if (!regex.test(title)) {
-                core.debug("Regex ".concat(regex, " failed with title ").concat(title));
-                core.info("Title Failed");
-                core.setFailed("PullRequest title does not start with a Jira Issue key.");
-                return [2 /*return*/];
+            core.debug(allPossibleRegex.toString());
+            for (_i = 0, allPossibleRegex_1 = allPossibleRegex; _i < allPossibleRegex_1.length; _i++) {
+                regex = allPossibleRegex_1[_i];
+                if (regex.test(title)) {
+                    core.info("Title Passed");
+                    return [2 /*return*/];
+                }
             }
-            core.info("Title Passed");
+            core.debug("Regex ".concat(allPossibleRegex, " failed with title ").concat(title));
+            core.info("Title Failed");
+            core.setFailed("PullRequest title does not start with any Jira Issue key.");
+            return [2 /*return*/];
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         }
         catch (error) {
@@ -88,28 +92,50 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
 }); };
 exports.run = run;
 var getRegex = function () {
-    var projectKey = core.getInput("projectKey", { required: false });
+    var projectKeyInput = core.getInput("projectKey", { required: false });
+    var projectKeysInput = core.getMultilineInput("projectKeys", { required: false });
     var separator = core.getInput("separator", { required: false });
     var keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
         required: false,
     });
-    core.debug("Project Key ".concat(projectKey));
+    core.debug("Project Key ".concat(projectKeyInput));
+    core.debug("Project Keys ".concat(projectKeysInput));
     core.debug("Separator ".concat(separator));
     core.debug("Key Anywhere In Title ".concat(keyAnywhereInTitle));
-    if (!projectKey || projectKey === "")
-        return getDefaultJiraIssueRegex();
-    if (!isValidProjectKey(projectKey))
-        throw new Error("Project Key  \"".concat(projectKey, "\" is invalid"));
-    if (!separator || separator === "")
-        return getRegexWithProjectKey(projectKey, keyAnywhereInTitle);
-    return getRegexWithProjectKeyAndSeparator(projectKey, separator, keyAnywhereInTitle);
+    if (stringIsNullOrWhitespace(projectKeyInput) && projectKeysInput.length < 1)
+        return [getDefaultJiraIssueRegex()];
+    // If projectKeys input is not provided this will be an empty array
+    var projectKeys = projectKeysInput;
+    if (!stringIsNullOrWhitespace(projectKeyInput)) {
+        projectKeys.push(projectKeyInput);
+    }
+    projectKeys.forEach(function (projectKey) {
+        if (!isValidProjectKey(projectKey)) {
+            var message = "ProjectKey ".concat(projectKey, " is not valid");
+            core.setFailed(message);
+            throw new Error(message);
+        }
+    });
+    var allPossibleRegex = [];
+    if (stringIsNullOrWhitespace(separator)) {
+        projectKeys.forEach(function (projectKey) {
+            allPossibleRegex.push(getRegexWithProjectKey(projectKey, keyAnywhereInTitle));
+        });
+        return allPossibleRegex;
+    }
+    projectKeys.forEach(function (projectKey) {
+        allPossibleRegex.push(getRegexWithProjectKeyAndSeparator(projectKey, separator, keyAnywhereInTitle));
+    });
+    return allPossibleRegex;
 };
 exports.getRegex = getRegex;
 var getPullRequestTitle = function () {
     var pull_request = github.context.payload.pull_request;
     core.debug("Pull Request: ".concat(JSON.stringify(github.context.payload.pull_request)));
     if (pull_request == undefined || pull_request.title == undefined) {
-        throw new Error("This action should only be run with Pull Request Events");
+        var message = "This action should only be run with Pull Request Events";
+        core.setFailed(message);
+        throw new Error(message);
     }
     return pull_request.title;
 };
@@ -128,4 +154,7 @@ var getRegexWithProjectKey = function (projectKey, keyAnywhereInTitle) {
 };
 var getRegexWithProjectKeyAndSeparator = function (projectKey, separator, keyAnywhereInTitle) {
     return new RegExp("".concat(getRegexWithProjectKeyAndKeyAnywhereInTitle(projectKey, keyAnywhereInTitle), "(\\d)+(").concat(separator, ")+(\\S)+(.)+"));
+};
+var stringIsNullOrWhitespace = function (str) {
+    return str == null || str.trim() === "";
 };
