@@ -25,9 +25,10 @@ export const run = async () => {
     core.setFailed(error.message);
   }
 };
+
 export const getRegex = (): RegExp[] => {
   const projectKeyInput = core.getInput("projectKey", { required: false });
-  let projectKeysInput = core.getInput("projectKeys", { required: false });
+  const projectKeysInput = core.getMultilineInput("projectKeys", { required: false });
   const separator = core.getInput("separator", { required: false });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
@@ -38,60 +39,68 @@ export const getRegex = (): RegExp[] => {
   core.debug(`Separator ${separator}`);
   core.debug(`Key Anywhere In Title ${keyAnywhereInTitle}`);
 
-  if ((!projectKeysInput || projectKeysInput === "") && (!projectKeyInput || projectKeyInput === "")) return [getDefaultJiraIssueRegex()];
+  if (stringIsNullOrWhitespace(projectKeyInput) && projectKeysInput.length < 1)
+    return [getDefaultJiraIssueRegex()];
 
-  const projectKeys: string[] = [];
-  // if there is any input in projectKeys.
-  // input separated by multiple lines: split and consume.
-  projectKeysInput = projectKeysInput.trim(); // remove extra spaces.
-  if (projectKeysInput.length > 0) {
-    projectKeysInput.split('\n').forEach((project: string) => {
-      projectKeys.push(project.trim());
-    });
-  }
-  if (projectKeyInput) {
+  // If projectKeys input is not provided this will be an empty array
+  const projectKeys: string[] = projectKeysInput;
+
+  if (!stringIsNullOrWhitespace(projectKeyInput)) {
     projectKeys.push(projectKeyInput);
   }
 
-  projectKeys.forEach((projectName: string) => {
-    if (!isValidProjectKey(projectName))
-      throw new Error(`Project Key  "${projectName}" is invalid`);
+  projectKeys.forEach((projectKey: string) => {
+    if (!isValidProjectKey(projectKey)) {
+      const message = `ProjectKey ${projectKey} is not valid`;
+      core.setFailed(message);
+      throw new Error(message);
+    }
   });
 
   const allPossibleRegex: RegExp[] = [];
 
-  if (!separator || separator === "") {
-    projectKeys.forEach((projectName: string) => {
-      allPossibleRegex.push(getRegexWithProjectKey(projectName, keyAnywhereInTitle));
+  if (stringIsNullOrWhitespace(separator)) {
+    projectKeys.forEach((projectKey) => {
+      allPossibleRegex.push(
+        getRegexWithProjectKey(projectKey, keyAnywhereInTitle),
+      );
     });
     return allPossibleRegex;
   }
 
-  projectKeys.forEach((projectName: string) => {
-    allPossibleRegex.push(getRegexWithProjectKeyAndSeparator(
-      projectName,
-      separator,
-      keyAnywhereInTitle,
-    ));
+  projectKeys.forEach((projectKey) => {
+    allPossibleRegex.push(
+      getRegexWithProjectKeyAndSeparator(
+        projectKey,
+        separator,
+        keyAnywhereInTitle,
+      ),
+    );
   });
   return allPossibleRegex;
 };
+
 export const getPullRequestTitle = () => {
   const pull_request = github.context.payload.pull_request;
   core.debug(
     `Pull Request: ${JSON.stringify(github.context.payload.pull_request)}`,
   );
   if (pull_request == undefined || pull_request.title == undefined) {
-    throw new Error("This action should only be run with Pull Request Events");
+    const message = "This action should only be run with Pull Request Events";
+    core.setFailed(message);
+    throw new Error(message);
   }
   return pull_request.title;
 };
+
 const getDefaultJiraIssueRegex = () =>
   new RegExp(
     "(?<=^|[a-z]-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+",
   );
+
 const isValidProjectKey = (projectKey: string) =>
   /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
+
 const getRegexWithProjectKeyAndKeyAnywhereInTitle = (
   projectKey: string,
   keyAnywhereInTitle: boolean,
@@ -99,6 +108,7 @@ const getRegexWithProjectKeyAndKeyAnywhereInTitle = (
   `${keyAnywhereInTitle ? "(.)*" : ""}(${
     keyAnywhereInTitle ? "" : "^"
   }${projectKey}-){1}`;
+
 const getRegexWithProjectKey = (
   projectKey: string,
   keyAnywhereInTitle: boolean,
@@ -109,6 +119,7 @@ const getRegexWithProjectKey = (
       keyAnywhereInTitle,
     )}(\\d)+(\\s)+(.)+`,
   );
+
 const getRegexWithProjectKeyAndSeparator = (
   projectKey: string,
   separator: string,
@@ -120,3 +131,6 @@ const getRegexWithProjectKeyAndSeparator = (
       keyAnywhereInTitle,
     )}(\\d)+(${separator})+(\\S)+(.)+`,
   );
+
+const stringIsNullOrWhitespace = (str: string | null | undefined) =>
+  str == null || str.trim() === "";
