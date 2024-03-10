@@ -279,6 +279,35 @@ describe("index", () => {
           expect(regex.test(`${projectNames[index]}-123:PR Title`)).toBe(true);
         });
       });
+
+      it("uses a project key and a colon separator if they exist with single tick in string", () => {
+        const projectNames: string[] = ["AB", "CD", "EF", "GH"];
+        process.env[
+            `INPUT_${projectKeysInputName.replace(/ /g, "_").toUpperCase()}`
+            ] = "'AB'\n'CD'\n'EF'\n'GH'";
+        process.env[
+            `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
+            ] = ":";
+        process.env[
+            `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
+            ] = "false";
+        const regexCollection = getRegex();
+        regexCollection.forEach((regex: RegExp, index: number) => {
+          expect(regex).toEqual(
+              new RegExp(`(^${projectNames[index]}-){1}(\\d)+(:)+(\\S)+(.)+`),
+          );
+          expect(
+              regex.test(`${projectNames[index]}-43: stuff and things`),
+          ).toBe(false);
+          expect(regex.test(`${projectNames[index]}-123: PR Title`)).toBe(
+              false,
+          );
+          expect(regex.test(`${projectNames[index]}-43:stuff and things`)).toBe(
+              true,
+          );
+          expect(regex.test(`${projectNames[index]}-123:PR Title`)).toBe(true);
+        });
+      });
     });
 
     describe("when projectKey and projectKeys both are provided", () => {

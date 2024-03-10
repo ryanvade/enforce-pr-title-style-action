@@ -105,7 +105,8 @@ var getRegex = function () {
     if (stringIsNullOrWhitespace(projectKeyInput) && projectKeysInput.length < 1)
         return [getDefaultJiraIssueRegex()];
     // If projectKeys input is not provided this will be an empty array
-    var projectKeys = projectKeysInput;
+    var projectKeys = projectKeysInput.map(function (projectKey) { return projectKey
+        .replaceAll(/'/g, ""); });
     if (!stringIsNullOrWhitespace(projectKeyInput)) {
         projectKeys.push(projectKeyInput);
     }

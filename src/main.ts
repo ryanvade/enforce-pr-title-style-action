@@ -43,7 +43,8 @@ export const getRegex = (): RegExp[] => {
     return [getDefaultJiraIssueRegex()];
 
   // If projectKeys input is not provided this will be an empty array
-  const projectKeys: string[] = projectKeysInput;
+  const projectKeys: string[] = projectKeysInput.map(projectKey => projectKey
+      .replaceAll(/'/g, ""));
 
   if (!stringIsNullOrWhitespace(projectKeyInput)) {
     projectKeys.push(projectKeyInput);
