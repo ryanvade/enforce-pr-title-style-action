@@ -1,14 +1,13 @@
 {
   "name": "@ryanvade/enforce-pr-title-style-action",
-  "version": "1.0.0",
+  "version": "2.1.1",
   "description": "Checks that a Pull Request includes a Jira Issue key",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "tsc && ncc build --source-map --license licenses.txt",
+    "package": "tsc && npx ncc build --source-map --license licenses.txt",
     "test": "jest --coverage"
   },
   "repository": {
@@ -44,7 +43,7 @@
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0"
   }
 }
