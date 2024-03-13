@@ -76,14 +76,14 @@ Note that `projectKey` and `projectKeys` works same under the hood. You can pass
 
 ```
 - name: Enforce Jira Issue Key in Pull Request Title
-  uses: ryanvade/enforce-pr-title-style-action@v2.1
+  uses: ryanvade/enforce-pr-title-style-action@v2.1.1
 ```
 
 ## Example Usage with a specific Project Key
 
 ```
 - name: Enforce Jira Issue Key in Pull Request Title
-  uses: ryanvade/enforce-pr-title-style-action@v2.1
+  uses: ryanvade/enforce-pr-title-style-action@v2.1.1
   with:
     projectKey: 'AB'
 ```
@@ -92,7 +92,7 @@ Note that `projectKey` and `projectKeys` works same under the hood. You can pass
 
 ```
 - name: Enforce Jira Issue Key in Pull Request Title
-  uses: ryanvade/enforce-pr-title-style-action@v2.1
+  uses: ryanvade/enforce-pr-title-style-action@v2.1.1
   with:
     projectKeys: |
       'AB'
@@ -104,7 +104,7 @@ Note that `projectKey` and `projectKeys` works same under the hood. You can pass
 
 ```
 - name: Enforce Jira Issue Key in Pull Request Title
-  uses: ryanvade/enforce-pr-title-style-action@v2.1
+  uses: ryanvade/enforce-pr-title-style-action@v2.1.1
   with:
     projectKey: 'AB'
     separator: ':'
@@ -114,7 +114,7 @@ Note that `projectKey` and `projectKeys` works same under the hood. You can pass
 
 ```
 - name: Enforce Jira Issue Key in Pull Request Title
-  uses: ryanvade/enforce-pr-title-style-action@v2.1
+  uses: ryanvade/enforce-pr-title-style-action@v2.1.1
   with:
     projectKey: 'AB'
     keyAnywhereInTitle: 'true'
