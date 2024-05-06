@@ -30,7 +30,7 @@
     "@actions/github": "^6.0.0",
     "@octokit/webhooks": "^13.2.2",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.8",
     "@vercel/ncc": "^0.38.1",
     "eslint-plugin-github": "^4.10.2",
     "eslint-plugin-jest": "^28.2.0",
