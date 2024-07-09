@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import escaperegexp from "lodash.escaperegexp";
 
 export const run = async () => {
   try {
@@ -28,7 +29,9 @@ export const run = async () => {
 
 export const getRegex = (): RegExp[] => {
   const projectKeyInput = core.getInput("projectKey", { required: false });
-  const projectKeysInput = core.getMultilineInput("projectKeys", { required: false });
+  const projectKeysInput = core.getMultilineInput("projectKeys", {
+    required: false,
+  });
   const separator = core.getInput("separator", { required: false });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
@@ -43,14 +46,19 @@ export const getRegex = (): RegExp[] => {
     return [getDefaultJiraIssueRegex()];
 
   // If projectKeys input is not provided this will be an empty array
-  const projectKeys: string[] = projectKeysInput.map(projectKey => projectKey
-      .replaceAll(/'/g, ""));
+  const projectKeys: string[] = projectKeysInput.map((projectKey) =>
+    projectKey.replaceAll(/'/g, ""),
+  );
 
   if (!stringIsNullOrWhitespace(projectKeyInput)) {
     projectKeys.push(projectKeyInput);
   }
 
-  projectKeys.forEach((projectKey: string) => {
+  const escapedProjectKeys = projectKeys.map((projectKey) =>
+    escaperegexp(projectKey),
+  );
+
+  escapedProjectKeys.forEach((projectKey: string) => {
     if (!isValidProjectKey(projectKey)) {
       const message = `ProjectKey ${projectKey} is not valid`;
       throw new Error(message);
@@ -60,7 +68,7 @@ export const getRegex = (): RegExp[] => {
   const allPossibleRegex: RegExp[] = [];
 
   if (stringIsNullOrWhitespace(separator)) {
-    projectKeys.forEach((projectKey) => {
+    escapedProjectKeys.forEach((projectKey) => {
       allPossibleRegex.push(
         getRegexWithProjectKey(projectKey, keyAnywhereInTitle),
       );
@@ -68,11 +76,13 @@ export const getRegex = (): RegExp[] => {
     return allPossibleRegex;
   }
 
-  projectKeys.forEach((projectKey) => {
+  const escapedSeparator = escaperegexp(separator);
+
+  escapedProjectKeys.forEach((projectKey) => {
     allPossibleRegex.push(
       getRegexWithProjectKeyAndSeparator(
         projectKey,
-        separator,
+        escapedSeparator,
         keyAnywhereInTitle,
       ),
     );
@@ -95,7 +105,7 @@ export const getPullRequestTitle = () => {
 const getDefaultJiraIssueRegex = () =>
   new RegExp(
     "(?<=^|[a-z]-|[\\s\\p{P}&[^\\-])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+",
-      "u"
+    "u",
   );
 
 const isValidProjectKey = (projectKey: string) =>

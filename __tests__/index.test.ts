@@ -66,7 +66,7 @@ describe("index", () => {
         process.env[
           `INPUT_${projectKeyInputName.replace(/ /g, "_").toUpperCase()}`
         ] = "aB";
-        expect(getRegex).toThrow('ProjectKey aB is not valid');
+        expect(getRegex).toThrow("ProjectKey aB is not valid");
       });
 
       it("uses a project key and a colon separator if they exist", () => {
@@ -159,14 +159,14 @@ describe("index", () => {
         process.env[
           `INPUT_${projectKeysInputName.replace(/ /g, "_").toUpperCase()}`
         ] = "aB";
-        expect(getRegex).toThrow('ProjectKey aB is not valid');
+        expect(getRegex).toThrow("ProjectKey aB is not valid");
       });
 
       it("throws an exception if one of the provided project key is not valid", () => {
         process.env[
           `INPUT_${projectKeysInputName.replace(/ /g, "_").toUpperCase()}`
         ] = "AB\naB\nCD";
-        expect(getRegex).toThrow('ProjectKey aB is not valid');
+        expect(getRegex).toThrow("ProjectKey aB is not valid");
       });
 
       it("uses a project key and a colon separator if they exist", () => {
@@ -283,27 +283,27 @@ describe("index", () => {
       it("uses a project key and a colon separator if they exist with single tick in string", () => {
         const projectNames: string[] = ["AB", "CD", "EF", "GH"];
         process.env[
-            `INPUT_${projectKeysInputName.replace(/ /g, "_").toUpperCase()}`
-            ] = "'AB'\n'CD'\n'EF'\n'GH'";
+          `INPUT_${projectKeysInputName.replace(/ /g, "_").toUpperCase()}`
+        ] = "'AB'\n'CD'\n'EF'\n'GH'";
         process.env[
-            `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
-            ] = ":";
+          `INPUT_${separatorKeyInputName.replace(/ /g, "_").toUpperCase()}`
+        ] = ":";
         process.env[
-            `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
-            ] = "false";
+          `INPUT_${keyAnywhereInTitle.replace(/ /g, "_").toUpperCase()}`
+        ] = "false";
         const regexCollection = getRegex();
         regexCollection.forEach((regex: RegExp, index: number) => {
           expect(regex).toEqual(
-              new RegExp(`(^${projectNames[index]}-){1}(\\d)+(:)+(\\S)+(.)+`),
+            new RegExp(`(^${projectNames[index]}-){1}(\\d)+(:)+(\\S)+(.)+`),
           );
           expect(
-              regex.test(`${projectNames[index]}-43: stuff and things`),
+            regex.test(`${projectNames[index]}-43: stuff and things`),
           ).toBe(false);
           expect(regex.test(`${projectNames[index]}-123: PR Title`)).toBe(
-              false,
+            false,
           );
           expect(regex.test(`${projectNames[index]}-43:stuff and things`)).toBe(
-              true,
+            true,
           );
           expect(regex.test(`${projectNames[index]}-123:PR Title`)).toBe(true);
         });

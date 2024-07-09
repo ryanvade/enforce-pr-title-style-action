@@ -22,10 +22,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPullRequestTitle = exports.getRegex = exports.run = void 0;
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
+const lodash_escaperegexp_1 = __importDefault(require("lodash.escaperegexp"));
 const run = async () => {
     try {
         core.debug("Starting PR Title check for Jira Issue Key");
@@ -52,7 +56,9 @@ const run = async () => {
 exports.run = run;
 const getRegex = () => {
     const projectKeyInput = core.getInput("projectKey", { required: false });
-    const projectKeysInput = core.getMultilineInput("projectKeys", { required: false });
+    const projectKeysInput = core.getMultilineInput("projectKeys", {
+        required: false,
+    });
     const separator = core.getInput("separator", { required: false });
     const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
         required: false,
@@ -64,12 +70,12 @@ const getRegex = () => {
     if (stringIsNullOrWhitespace(projectKeyInput) && projectKeysInput.length < 1)
         return [getDefaultJiraIssueRegex()];
     // If projectKeys input is not provided this will be an empty array
-    const projectKeys = projectKeysInput.map(projectKey => projectKey
-        .replaceAll(/'/g, ""));
+    const projectKeys = projectKeysInput.map((projectKey) => projectKey.replaceAll(/'/g, ""));
     if (!stringIsNullOrWhitespace(projectKeyInput)) {
         projectKeys.push(projectKeyInput);
     }
-    projectKeys.forEach((projectKey) => {
+    const escapedProjectKeys = projectKeys.map((projectKey) => (0, lodash_escaperegexp_1.default)(projectKey));
+    escapedProjectKeys.forEach((projectKey) => {
         if (!isValidProjectKey(projectKey)) {
             const message = `ProjectKey ${projectKey} is not valid`;
             throw new Error(message);
@@ -77,13 +83,14 @@ const getRegex = () => {
     });
     const allPossibleRegex = [];
     if (stringIsNullOrWhitespace(separator)) {
-        projectKeys.forEach((projectKey) => {
+        escapedProjectKeys.forEach((projectKey) => {
             allPossibleRegex.push(getRegexWithProjectKey(projectKey, keyAnywhereInTitle));
         });
         return allPossibleRegex;
     }
-    projectKeys.forEach((projectKey) => {
-        allPossibleRegex.push(getRegexWithProjectKeyAndSeparator(projectKey, separator, keyAnywhereInTitle));
+    const escapedSeparator = (0, lodash_escaperegexp_1.default)(separator);
+    escapedProjectKeys.forEach((projectKey) => {
+        allPossibleRegex.push(getRegexWithProjectKeyAndSeparator(projectKey, escapedSeparator, keyAnywhereInTitle));
     });
     return allPossibleRegex;
 };
@@ -98,8 +105,8 @@ const getPullRequestTitle = () => {
     return pull_request.title;
 };
 exports.getPullRequestTitle = getPullRequestTitle;
-const getDefaultJiraIssueRegex = () => new RegExp("(?<=^|[a-z]-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+");
-const isValidProjectKey = (projectKey) => /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
+const getDefaultJiraIssueRegex = () => new RegExp("(?<=^|[a-z]-|[\\s\\p{P}&[^\\-])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+", "u");
+const isValidProjectKey = (projectKey) => /(?<=^|[a-z]-|[\s\p{P}&[^-])([A-Z][A-Z0-9_]*)/u.test(projectKey);
 const getRegexWithProjectKeyAndKeyAnywhereInTitle = (projectKey, keyAnywhereInTitle) => `${keyAnywhereInTitle ? "(.)*" : ""}(${keyAnywhereInTitle ? "" : "^"}${projectKey}-){1}`;
 const getRegexWithProjectKey = (projectKey, keyAnywhereInTitle) => new RegExp(`${getRegexWithProjectKeyAndKeyAnywhereInTitle(projectKey, keyAnywhereInTitle)}(\\d)+(\\s)+(.)+`);
 const getRegexWithProjectKeyAndSeparator = (projectKey, separator, keyAnywhereInTitle) => new RegExp(`${getRegexWithProjectKeyAndKeyAnywhereInTitle(projectKey, keyAnywhereInTitle)}(\\d)+(${separator})+(\\S)+(.)+`);
