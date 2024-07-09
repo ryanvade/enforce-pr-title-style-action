@@ -94,11 +94,12 @@ export const getPullRequestTitle = () => {
 
 const getDefaultJiraIssueRegex = () =>
   new RegExp(
-    "(?<=^|[a-z]-|[\\s\\p{Punct}&[^\\-]])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+",
+    "(?<=^|[a-z]-|[\\s\\p{P}&[^\\-])([A-Z][A-Z0-9_]*-\\d+)(?![^\\W_])(\\s)+(.)+",
+      "u"
   );
 
 const isValidProjectKey = (projectKey: string) =>
-  /(?<=^|[a-z]-|[\s\p{Punct}&[^-]])([A-Z][A-Z0-9_]*)/.test(projectKey);
+  /(?<=^|[a-z]-|[\s\p{P}&[^-])([A-Z][A-Z0-9_]*)/u.test(projectKey);
 
 const getRegexWithProjectKeyAndKeyAnywhereInTitle = (
   projectKey: string,

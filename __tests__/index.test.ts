@@ -318,7 +318,7 @@ describe("index", () => {
         const regex = getRegex();
         const defaultRegex =
           // eslint-disable-next-line no-useless-escape
-          /(?<=^|[a-z]-|[\s\p{Punct}&[^\-]])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/;
+          /(?<=^|[a-z]-|[\s\p{P}&[^\-])([A-Z][A-Z0-9_]*-\d+)(?![^\W_])(\s)+(.)+/u;
         expect(regex.length).toEqual(1);
         expect(regex[0]).toEqual(defaultRegex);
         expect(regex[0].test("PR-4 this is valid")).toBe(true);
