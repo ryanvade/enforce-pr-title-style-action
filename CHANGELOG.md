@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### Documentation
+
+- *(changelog)* Add git-cliff for changelog generation
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Bump prettier from 3.3.2 to 3.3.3 (#156)
+- *(deps)* Bump @octokit/webhooks from 13.2.7 to 13.2.8 (#154)
+- *(deps)* Bump ts-jest from 29.1.5 to 29.2.3 (#157)
+- *(deps)* Bump @octokit/webhooks from 13.2.8 to 13.3.0 (#160)
+- *(deps)* Bump @types/node from 20.14.10 to 20.14.12 (#162)
+- *(deps-dev)* Bump @typescript-eslint/eslint-plugin (#153)
+- *(deps-dev)* Bump @typescript-eslint/eslint-plugin (#161)
+- *(deps-dev)* Bump @typescript-eslint/parser from 7.16.0 to 7.17.0 (#163)
+
+
 ## [2.1.2] - 2024-07-09
 
 ### Miscellaneous Tasks
