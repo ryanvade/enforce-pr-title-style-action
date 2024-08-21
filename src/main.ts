@@ -32,14 +32,17 @@ export const getRegex = (): RegExp[] => {
   const projectKeysInput = core.getMultilineInput("projectKeys", {
     required: false,
   });
-  const separator = core.getInput("separator", { required: false });
+  const separator = core.getInput("separator", {
+    required: false,
+    trimWhitespace: false,
+  });
   const keyAnywhereInTitle = core.getBooleanInput("keyAnywhereInTitle", {
     required: false,
   });
 
   core.debug(`Project Key ${projectKeyInput}`);
   core.debug(`Project Keys ${projectKeysInput}`);
-  core.debug(`Separator ${separator}`);
+  core.debug(`Separator "${separator}"`);
   core.debug(`Key Anywhere In Title ${keyAnywhereInTitle}`);
 
   if (stringIsNullOrWhitespace(projectKeyInput) && projectKeysInput.length < 1)
@@ -139,7 +142,7 @@ const getRegexWithProjectKeyAndSeparator = (
     `${getRegexWithProjectKeyAndKeyAnywhereInTitle(
       projectKey,
       keyAnywhereInTitle,
-    )}(\\d)+(${separator})+(\\S)+(.)+`,
+    )}(\\d)+${separator}(\\S)+(.)+`,
   );
 
 const stringIsNullOrWhitespace = (str: string | null | undefined) =>

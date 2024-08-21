@@ -35,7 +35,7 @@ As an example with the separator `:` the following is allowed
 AB-1:Initialize Project
 ```
 
-Note that by specifying a separator the following would not be allowed
+Note that to trailing spaces must be explicitly declared with the separator. For example, with the separator `:` the following is not allowed, but with the separator `: `&nbsp;
 
 ```
 AB-1: Initialize Project

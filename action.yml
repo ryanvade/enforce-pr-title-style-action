@@ -11,7 +11,7 @@ inputs:
     description: 'A list of Jira Project Keys that must be included.'
     required: false
   separator:
-    description: 'Character that should be used to separate the Jira Project Key and Issue Number from the rest of the title'
+    description: 'String that should be used to separate the Jira Project Key and Issue Number from the rest of the title'
     required: false
   keyAnywhereInTitle:
     description: 'Allows the Jira Project Key and Issue Number to be anywhere in the title'
